@@ -363,7 +363,7 @@ if submitted:
         if result_image:
             # Display the generated image
             st.success("Image generated successfully!")
-            st.image(result_image, caption="Generated News Image", use_column_width=True)
+            st.image(result_image, caption="Generated News Image", use_container_width=True)
 
             # Save to temporary file and provide download button
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
