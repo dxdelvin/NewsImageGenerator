@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import os
 import tempfile
 
 
@@ -158,23 +159,23 @@ def create_news_image(background_url, tag_text, title_text, logo_url):
 
 # Streamlit app
 st.title("News Image Generator")
-st.write("By dxdelvin")
+st.write("Create professional news images with custom content")
 
 # Input fields
 with st.form("image_generator_form"):
     col1, col2 = st.columns(2)
 
     with col1:
-             tag_text = st.text_input("Tag Text", value="GLOBAL MARKETS")
+            tag_text = st.text_input("Tag Text", value="GLOBAL MARKETS")
 
     with col2:
-              website_name = st.text_input("Website Name", value="dailyequity.in")
+            website_name = st.text_input("Website Name", value="dailyequity.in")
 
     title_text = st.text_area("Title Text",
                               value="India Cuts Rates For First Time In Nearly Five Years; Indians To Enjoy 25 bps Cut")
 
     # Option to upload images instead of using URLs
-    st.write("Upload images:")
+    st.write("Upload Images:")
     col3, col4 = st.columns(2)
 
     with col3:
@@ -364,16 +365,18 @@ if submitted:
             st.success("Image generated successfully!")
             st.image(result_image, caption="Generated News Image", use_column_width=True)
 
-            # Convert image to bytes for download
-            img_byte_arr = BytesIO()
-            result_image.save(img_byte_arr, format='PNG')
-            img_byte_arr = img_byte_arr.getvalue()
+            # Save to temporary file and provide download button
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+            result_image.save(temp_file.name)
 
-            # Provide download button directly with the bytes
-            st.download_button(
-                label="Download Image",
-                data=img_byte_arr,
-                file_name="news_image.png",
-                mime="image/png"
-            )
+            with open(temp_file.name, "rb") as file:
+                btn = st.download_button(
+                    label="Download Image",
+                    data=file,
+                    file_name="news_image.png",
+                    mime="image/png"
+                )
+
+            # Clean up temporary file
+            os.unlink(temp_file.name)
 
